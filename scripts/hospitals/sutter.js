@@ -4,7 +4,7 @@ import { getWorkdayCsrf, workdayPost } from '../lib/workday.js';
 const CX_URL =
   'https://sutter.wd1.myworkdayjobs.com/wday/cxs/sutter/SHCO_External/jobs';
 const BASE_SITE = 'https://sutter.wd1.myworkdayjobs.com/en-US/SHCO_External';
-const KEYWORDS = ['Nurse', 'New Grad Residency', 'RN Resident'];
+const KEYWORDS = ['New Grad', 'Nurse Residency', 'RN Resident'];
 const HOSPITAL = 'Sutter Health';
 
 export async function scrape() {

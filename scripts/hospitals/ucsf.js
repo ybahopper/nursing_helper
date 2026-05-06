@@ -4,7 +4,7 @@ import { getWorkdayCsrf, workdayPost } from '../lib/workday.js';
 const CX_URL =
   'https://ucsf.wd5.myworkdayjobs.com/wday/cxs/ucsf/UCareers/jobs';
 const BASE_SITE = 'https://ucsf.wd5.myworkdayjobs.com/en-US/UCareers';
-const KEYWORDS = ['Nurse', 'New Grad Residency', 'RN Resident'];
+const KEYWORDS = ['New Grad', 'Nurse Residency', 'RN Resident'];
 const HOSPITAL = 'UCSF Health';
 
 export async function scrape() {
