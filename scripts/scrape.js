@@ -7,34 +7,42 @@ import { jobExists, insertJob } from './lib/supabase.js';
 import { notifyDiscord } from './lib/discord.js';
 
 const scrapers = [
-  scrapeKaiser,
-  scrapeStanfordAdult,
-  scrapeStanfordChildrens,
-  scrapeUCSF,
-  scrapeSutter,
+  { name: 'Kaiser', fn: scrapeKaiser },
+  { name: 'Stanford Adult', fn: scrapeStanfordAdult },
+  { name: 'Stanford Childrens', fn: scrapeStanfordChildrens },
+  { name: 'UCSF', fn: scrapeUCSF },
+  { name: 'Sutter', fn: scrapeSutter },
 ];
 
 async function run() {
-  const results = await Promise.allSettled(scrapers.map((fn) => fn()));
+  const results = await Promise.allSettled(scrapers.map(({ fn }) => fn()));
 
-  const allJobs = results
-    .filter((r) => r.status === 'fulfilled')
-    .flatMap((r) => r.value);
+  const allJobs = [];
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    const name = scrapers[i].name;
+    if (r.status === 'fulfilled') {
+      console.log(`[${name}] returned ${r.value.length} jobs`);
+      allJobs.push(...r.value);
+    } else {
+      console.error(`[${name}] FAILED:`, r.reason);
+    }
+  }
 
-  const failed = results.filter((r) => r.status === 'rejected');
-  for (const f of failed) console.error('Scraper failed:', f.reason);
+  console.log(`\nTotal jobs across all scrapers: ${allJobs.length}`);
 
   let newCount = 0;
   for (const job of allJobs) {
     const exists = await jobExists(job.job_id);
     if (!exists) {
+      console.log(`[new] ${job.hospital} — ${job.title}`);
       await insertJob(job);
       await notifyDiscord(job);
       newCount++;
     }
   }
 
-  console.log(`Checked ${allJobs.length} jobs, found ${newCount} new.`);
+  console.log(`\nChecked ${allJobs.length} jobs, found ${newCount} new.`);
 }
 
 run().catch((err) => {
