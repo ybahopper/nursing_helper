@@ -9,13 +9,9 @@ export async function scrape() {
 
   for (const keyword of KEYWORDS) {
     try {
-      const params = new URLSearchParams({
-        finder: `findReqs;siteNumber=CX_1,keyword=${keyword}`,
-        limit: '25',
-        offset: '0',
-      });
+      const url = `${BASE_URL}?finder=findReqs;siteNumber=CX_1,keyword=${encodeURIComponent(keyword)}&limit=25&offset=0`;
 
-      const res = await fetch(`${BASE_URL}?${params}`, {
+      const res = await fetch(url, {
         headers: { Accept: 'application/json', 'User-Agent': 'Mozilla/5.0' },
       });
 
