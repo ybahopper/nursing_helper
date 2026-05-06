@@ -1,4 +1,4 @@
-import { dedup } from '../lib/utils.js';
+import { dedup, isNewGradJob } from '../lib/utils.js';
 
 const BASE_URL = 'https://www.kaiserpermanentejobs.org/api/apply/v2/jobs';
 const KEYWORDS = ['new grad', 'nurse residency', 'rn resident'];
@@ -33,9 +33,7 @@ export async function scrape() {
   }
   const positions = data.positions ?? [];
 
-  const matches = positions.filter((p) =>
-    KEYWORDS.some((kw) => p.title?.toLowerCase().includes(kw))
-  );
+  const matches = positions.filter((p) => isNewGradJob(p.title));
 
   return dedup(
     matches.map((p) => ({

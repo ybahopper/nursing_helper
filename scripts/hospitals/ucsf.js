@@ -1,36 +1,49 @@
-import { dedup } from '../lib/utils.js';
-import { getWorkdayCsrf, workdayPost } from '../lib/workday.js';
+import { dedup, isNewGradJob } from '../lib/utils.js';
 
-const CX_URL =
-  'https://ucsf.wd5.myworkdayjobs.com/wday/cxs/ucsf/UCareers/jobs';
-const BASE_SITE = 'https://ucsf.wd5.myworkdayjobs.com/en-US/UCareers';
+const BASE_URL = 'https://iazuqy.fa.ocs.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions';
+const APPLY_BASE = 'https://careers.ucsf.edu/jobs';
 const KEYWORDS = ['New Grad', 'Nurse Residency', 'RN Resident'];
 const HOSPITAL = 'UCSF Health';
 
 export async function scrape() {
   const results = [];
-  let cookieHeader, csrfToken;
-  try {
-    ({ cookieHeader, csrfToken } = await getWorkdayCsrf(BASE_SITE));
-  } catch {
-    return [];
-  }
 
   for (const keyword of KEYWORDS) {
     try {
-      const res = await workdayPost(CX_URL, keyword, cookieHeader, csrfToken);
+      const params = new URLSearchParams({
+        expand: 'requisitionList.secondaryLocations,flexFieldsFacet.values',
+        finder: 'findReqs',
+        'findReqs;siteNumber': 'CX_1',
+        'findReqs;keyword': keyword,
+        'findReqs;selectedFlexFieldsFacets': '',
+        limit: '25',
+        offset: '0',
+      });
+
+      const res = await fetch(`${BASE_URL}?${params}`, {
+        headers: { Accept: 'application/json', 'User-Agent': 'Mozilla/5.0' },
+      });
+
+      console.log(`[UCSF] keyword="${keyword}" status=${res.status}`);
       if (!res.ok) continue;
+
       const data = await res.json();
-      const postings = data.jobPostings ?? [];
-      for (const p of postings) {
+      const items = data.items ?? [];
+
+      const filtered = items.filter((item) =>
+        isNewGradJob(item.Title)
+      );
+
+      for (const item of filtered) {
         results.push({
-          job_id: `ucsf-${p.externalPath}`,
-          title: p.title,
+          job_id: `ucsf-${item.Id}`,
+          title: item.Title,
           hospital: HOSPITAL,
-          link: `${BASE_SITE}${p.externalPath}`,
+          link: `${APPLY_BASE}/${item.Id}`,
         });
       }
-    } catch {
+    } catch (err) {
+      console.log(`[UCSF] keyword="${keyword}" error: ${err.message}`);
       continue;
     }
   }

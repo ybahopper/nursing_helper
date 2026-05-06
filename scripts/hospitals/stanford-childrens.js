@@ -1,10 +1,10 @@
-import { dedup } from '../lib/utils.js';
+import { dedup, isNewGradJob } from '../lib/utils.js';
 import { getWorkdayCsrf, workdayPost } from '../lib/workday.js';
 
 const CX_URL =
-  'https://lucilepackard.wd1.myworkdayjobs.com/wday/cxs/lucilepackard/External_Lucile_Packard/jobs';
+  'https://stanfordhealthcare.wd5.myworkdayjobs.com/wday/cxs/stanfordhealthcare/LPCH_External_Careers/jobs';
 const BASE_SITE =
-  'https://lucilepackard.wd1.myworkdayjobs.com/en-US/External_Lucile_Packard';
+  'https://stanfordhealthcare.wd5.myworkdayjobs.com/en-US/LPCH_External_Careers';
 const KEYWORDS = ['New Grad', 'Nurse Residency', 'RN Resident'];
 const HOSPITAL = "Stanford Children's Health (Lucile Packard)";
 
@@ -22,7 +22,7 @@ export async function scrape() {
       const res = await workdayPost(CX_URL, keyword, cookieHeader, csrfToken);
       if (!res.ok) continue;
       const data = await res.json();
-      const postings = data.jobPostings ?? [];
+      const postings = (data.jobPostings ?? []).filter((p) => isNewGradJob(p.title));
       for (const p of postings) {
         results.push({
           job_id: `stanford-childrens-${p.externalPath}`,

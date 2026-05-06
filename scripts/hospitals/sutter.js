@@ -1,9 +1,9 @@
-import { dedup } from '../lib/utils.js';
+import { dedup, isNewGradJob } from '../lib/utils.js';
 import { getWorkdayCsrf, workdayPost } from '../lib/workday.js';
 
 const CX_URL =
-  'https://sutter.wd1.myworkdayjobs.com/wday/cxs/sutter/SHCO_External/jobs';
-const BASE_SITE = 'https://sutter.wd1.myworkdayjobs.com/en-US/SHCO_External';
+  'https://sutterhealth.wd1.myworkdayjobs.com/wday/cxs/sutterhealth/SH/jobs';
+const BASE_SITE = 'https://sutterhealth.wd1.myworkdayjobs.com/en-US/SH';
 const KEYWORDS = ['New Grad', 'Nurse Residency', 'RN Resident'];
 const HOSPITAL = 'Sutter Health';
 
@@ -21,7 +21,7 @@ export async function scrape() {
       const res = await workdayPost(CX_URL, keyword, cookieHeader, csrfToken);
       if (!res.ok) continue;
       const data = await res.json();
-      const postings = data.jobPostings ?? [];
+      const postings = (data.jobPostings ?? []).filter((p) => isNewGradJob(p.title));
       for (const p of postings) {
         results.push({
           job_id: `sutter-${p.externalPath}`,
