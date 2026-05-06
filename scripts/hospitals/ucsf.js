@@ -1,9 +1,8 @@
 import { dedup, isNewGradJob } from '../lib/utils.js';
 
 const BASE_URL = 'https://iazuqy.fa.ocs.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions';
-const APPLY_BASE = 'https://careers.ucsf.edu/jobs';
-const KEYWORDS = ['New Grad', 'Nurse Residency', 'RN Resident'];
 const HOSPITAL = 'UCSF Health';
+const KEYWORDS = ['New Grad', 'Nurse Residency', 'RN Resident'];
 
 export async function scrape() {
   const results = [];
@@ -11,11 +10,7 @@ export async function scrape() {
   for (const keyword of KEYWORDS) {
     try {
       const params = new URLSearchParams({
-        expand: 'requisitionList.secondaryLocations,flexFieldsFacet.values',
-        finder: 'findReqs',
-        'findReqs;siteNumber': 'CX_1',
-        'findReqs;keyword': keyword,
-        'findReqs;selectedFlexFieldsFacets': '',
+        finder: `findReqs;siteNumber=CX_1,keyword=${keyword}`,
         limit: '25',
         offset: '0',
       });
@@ -28,18 +23,14 @@ export async function scrape() {
       if (!res.ok) continue;
 
       const data = await res.json();
-      const items = data.items ?? [];
+      const items = (data.items ?? []).filter((item) => isNewGradJob(item.Title));
 
-      const filtered = items.filter((item) =>
-        isNewGradJob(item.Title)
-      );
-
-      for (const item of filtered) {
+      for (const item of items) {
         results.push({
           job_id: `ucsf-${item.Id}`,
           title: item.Title,
           hospital: HOSPITAL,
-          link: `${APPLY_BASE}/${item.Id}`,
+          link: `https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/${item.Id}`,
         });
       }
     } catch (err) {

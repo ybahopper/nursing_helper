@@ -1,37 +1,35 @@
 import { dedup, isNewGradJob } from '../lib/utils.js';
-import { getWorkdayCsrf, workdayPost } from '../lib/workday.js';
 
-const CX_URL =
-  'https://stanfordhealthcare.wd5.myworkdayjobs.com/wday/cxs/stanfordhealthcare/LPCH_External_Careers/jobs';
-const BASE_SITE =
-  'https://stanfordhealthcare.wd5.myworkdayjobs.com/en-US/LPCH_External_Careers';
-const KEYWORDS = ['New Grad', 'Nurse Residency', 'RN Resident'];
+const SR_URL = 'https://api.smartrecruiters.com/v1/companies/StanfordMedicineChildrensHealth/postings';
 const HOSPITAL = "Stanford Children's Health (Lucile Packard)";
+const KEYWORDS = ['new grad', 'nurse residency', 'rn resident'];
 
 export async function scrape() {
   const results = [];
-  let cookieHeader, csrfToken;
-  try {
-    ({ cookieHeader, csrfToken } = await getWorkdayCsrf(BASE_SITE));
-  } catch {
-    return [];
-  }
 
   for (const keyword of KEYWORDS) {
     try {
-      const res = await workdayPost(CX_URL, keyword, cookieHeader, csrfToken);
+      const params = new URLSearchParams({ q: keyword, limit: '25', offset: '0' });
+      const res = await fetch(`${SR_URL}?${params}`, {
+        headers: { Accept: 'application/json', 'User-Agent': 'Mozilla/5.0' },
+      });
+
+      console.log(`[Stanford Childrens] keyword="${keyword}" status=${res.status}`);
       if (!res.ok) continue;
+
       const data = await res.json();
-      const postings = (data.jobPostings ?? []).filter((p) => isNewGradJob(p.title));
+      const postings = (data.content ?? []).filter((p) => isNewGradJob(p.name));
+
       for (const p of postings) {
         results.push({
-          job_id: `stanford-childrens-${p.externalPath}`,
-          title: p.title,
+          job_id: `stanford-childrens-${p.id}`,
+          title: p.name,
           hospital: HOSPITAL,
-          link: `${BASE_SITE}${p.externalPath}`,
+          link: p.ref ?? `https://careers.smartrecruiters.com/StanfordMedicineChildrensHealth/${p.id}`,
         });
       }
-    } catch {
+    } catch (err) {
+      console.log(`[Stanford Childrens] keyword="${keyword}" error: ${err.message}`);
       continue;
     }
   }
