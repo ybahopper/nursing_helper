@@ -4,7 +4,7 @@ const CX_URL =
   'https://stanfordhealthcare.wd5.myworkdayjobs.com/wday/cxs/stanfordhealthcare/SHC_External_Careers/jobs';
 const BASE_SITE =
   'https://stanfordhealthcare.wd5.myworkdayjobs.com/en-US/SHC_External_Careers';
-const KEYWORDS = ['Clinical Nurse I', 'New Grad Residency', 'RN Resident'];
+const KEYWORDS = ['Nurse', 'New Grad Residency', 'RN Resident'];
 const HOSPITAL = 'Stanford Health Care';
 
 export async function scrape() {
