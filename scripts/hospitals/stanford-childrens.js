@@ -5,7 +5,7 @@ const CX_URL =
   'https://lucilepackard.wd1.myworkdayjobs.com/wday/cxs/lucilepackard/External_Lucile_Packard/jobs';
 const BASE_SITE =
   'https://lucilepackard.wd1.myworkdayjobs.com/en-US/External_Lucile_Packard';
-const KEYWORDS = ['Clinical Nurse I', 'New Grad Residency', 'RN Resident'];
+const KEYWORDS = ['Nurse', 'New Grad Residency', 'RN Resident'];
 const HOSPITAL = "Stanford Children's Health (Lucile Packard)";
 
 export async function scrape() {

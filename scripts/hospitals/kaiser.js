@@ -1,7 +1,7 @@
 import { dedup } from '../lib/utils.js';
 
 const BASE_URL = 'https://www.kaiserpermanentejobs.org/api/apply/v2/jobs';
-const KEYWORDS = ['clinical nurse i', 'new grad residency', 'rn resident'];
+const KEYWORDS = ['nurse', 'new grad residency', 'rn resident'];
 const HOSPITAL = 'Kaiser Permanente Northern California';
 
 export async function scrape() {
