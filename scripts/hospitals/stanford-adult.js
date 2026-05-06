@@ -1,4 +1,5 @@
 import { dedup } from '../lib/utils.js';
+import { getWorkdayCsrf, workdayPost } from '../lib/workday.js';
 
 const CX_URL =
   'https://stanfordhealthcare.wd5.myworkdayjobs.com/wday/cxs/stanfordhealthcare/SHC_External_Career_Site/jobs';
@@ -9,20 +10,19 @@ const HOSPITAL = 'Stanford Health Care';
 
 export async function scrape() {
   const results = [];
+  let cookieHeader, csrfToken;
+  try {
+    ({ cookieHeader, csrfToken } = await getWorkdayCsrf(BASE_SITE));
+  } catch {
+    return [];
+  }
 
   for (const keyword of KEYWORDS) {
     try {
-      const res = await fetch(CX_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ appliedFacets: {}, limit: 20, offset: 0, searchText: keyword }),
-      });
-
+      const res = await workdayPost(CX_URL, keyword, cookieHeader, csrfToken);
       if (!res.ok) continue;
-
       const data = await res.json();
       const postings = data.jobPostings ?? [];
-
       for (const p of postings) {
         results.push({
           job_id: `stanford-adult-${p.externalPath}`,
