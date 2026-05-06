@@ -5,7 +5,11 @@
       "Bash(node --test scripts/lib/utils.test.js)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:stanfordchildrens.org)",
+      "WebFetch(domain:lpch.org)",
+      "WebFetch(domain:careers.ucsf.edu)",
+      "WebFetch(domain:careers.stanfordchildrens.org)"
     ]
   }
 }
