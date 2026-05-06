@@ -4,7 +4,8 @@
       "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\thetr\\\\Documents\\\\nursing_helper\\\\scripts\\\\lib\" -Force)",
       "Bash(node --test scripts/lib/utils.test.js)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "WebSearch"
     ]
   }
 }
