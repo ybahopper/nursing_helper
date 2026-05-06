@@ -1,56 +1,80 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
-import Link from "next/link";
-import { Suspense } from "react";
+import { fetchJobs } from './actions';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 
-export default function Home() {
+export const revalidate = 60;
+
+export default async function Home() {
+  const jobs = await fetchJobs();
+
   return (
     <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
+      <div className="flex-1 w-full flex flex-col gap-6 items-center">
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
-            </div>
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
+            <span className="font-semibold">Bay Area New Grad RN Tracker</span>
+            <ThemeSwitcher />
           </div>
         </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
+
+        <div className="w-full max-w-5xl px-5 flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold">Open Nursing Residencies</h1>
+            <span className="text-sm text-foreground/60">{jobs.length} listings</span>
+          </div>
+
+          {jobs.length === 0 ? (
+            <p className="text-foreground/60 py-12 text-center">
+              No jobs found yet — the scraper will populate this list automatically.
+            </p>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-foreground/10">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-foreground/10 bg-foreground/5">
+                    <th className="text-left px-4 py-3 font-semibold">Title</th>
+                    <th className="text-left px-4 py-3 font-semibold">Hospital</th>
+                    <th className="text-left px-4 py-3 font-semibold">Detected</th>
+                    <th className="text-left px-4 py-3 font-semibold">Link</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {jobs.map((job) => (
+                    <tr
+                      key={job.id}
+                      className="border-b border-foreground/10 hover:bg-foreground/5 transition-colors"
+                    >
+                      <td className="px-4 py-3 font-medium">{job.title}</td>
+                      <td className="px-4 py-3 text-foreground/70">{job.hospital}</td>
+                      <td className="px-4 py-3 text-foreground/60 whitespace-nowrap">
+                        {new Date(job.created_at).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </td>
+                      <td className="px-4 py-3">
+                        <a
+                          href={job.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          Apply →
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
+        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-8 mt-auto">
+          <p className="text-foreground/40">
+            Auto-refreshes every 60s · Scraped every 30 min
           </p>
-          <ThemeSwitcher />
         </footer>
       </div>
     </main>
