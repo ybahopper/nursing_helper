@@ -25,7 +25,12 @@ export async function scrape() {
 
   if (!res.ok) return [];
 
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    return [];
+  }
   const positions = data.positions ?? [];
 
   const matches = positions.filter((p) =>
