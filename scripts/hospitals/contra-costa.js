@@ -2,10 +2,14 @@ import { dedup, isNewGradJob } from '../lib/utils.js';
 
 const GJ_BASE = 'https://www.governmentjobs.com';
 const AGENCY = 'contracosta';
-const KEYWORDS = ['nurse residency', 'clinical nurse i', 'new grad nurse'];
+const KEYWORDS = ['nurse residency', 'clinical nurse', 'new grad nurse'];
 const HOSPITAL = 'Contra Costa Regional Medical Center';
 
-const JOB_RE = /href="(\/careers\/contracosta\/jobs\/(\d+)\/[^"]+)" rel="[^"]*">\s*([^<]+)\s*<\/a>/g;
+const HREF_RE = /href="(\/careers\/contracosta\/jobs\/(\d+)\/([\w-]+))"/g;
+
+function slugToTitle(slug) {
+  return slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 function isCountyNewGrad(title) {
   return isNewGradJob(title) || /\bclinical\s+nurse\s+i\b(?!i)/i.test(title);
@@ -30,11 +34,11 @@ export async function scrape() {
 
       const html = await res.text();
 
-      for (const [, path, id, rawTitle] of html.matchAll(JOB_RE)) {
-        const title = rawTitle.trim();
-        if (!isCountyNewGrad(title)) continue;
+      for (const [, path, id, slug] of html.matchAll(HREF_RE)) {
         if (seen.has(id)) continue;
         seen.add(id);
+        const title = slugToTitle(slug);
+        if (!isCountyNewGrad(title)) continue;
         results.push({
           job_id: `contra-costa-${id}`,
           title,
