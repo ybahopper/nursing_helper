@@ -2,22 +2,18 @@ import { dedup, isNewGradJob } from '../lib/utils.js';
 
 const GJ_BASE = 'https://www.governmentjobs.com';
 const AGENCY = 'contracosta';
-const KEYWORDS = ['nurse residency', 'new grad nurse', 'rn resident'];
+const KEYWORDS = ['nurse residency', 'clinical nurse i', 'new grad nurse'];
 const HOSPITAL = 'Contra Costa Regional Medical Center';
 
-const JOB_LINK_RE = new RegExp(
-  `href="(/careers/${AGENCY}/jobs/(\\d+)/([\\w-]+))"`,
-  'g'
-);
+const JOB_RE = /href="(\/careers\/contracosta\/jobs\/(\d+)\/[^"]+)" rel="[^"]*">\s*([^<]+)\s*<\/a>/g;
 
-function slugToTitle(slug) {
-  return slug
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+function isCountyNewGrad(title) {
+  return isNewGradJob(title) || /\bclinical\s+nurse\s+i\b(?!i)/i.test(title);
 }
 
 export async function scrape() {
   const results = [];
+  const seen = new Set();
 
   for (const keyword of KEYWORDS) {
     try {
@@ -33,13 +29,12 @@ export async function scrape() {
       if (!res.ok) continue;
 
       const html = await res.text();
-      const seen = new Set();
 
-      for (const [, path, id, slug] of html.matchAll(JOB_LINK_RE)) {
+      for (const [, path, id, rawTitle] of html.matchAll(JOB_RE)) {
+        const title = rawTitle.trim();
+        if (!isCountyNewGrad(title)) continue;
         if (seen.has(id)) continue;
         seen.add(id);
-        const title = slugToTitle(slug);
-        if (!isNewGradJob(title)) continue;
         results.push({
           job_id: `contra-costa-${id}`,
           title,
