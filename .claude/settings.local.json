@@ -9,7 +9,28 @@
       "WebFetch(domain:stanfordchildrens.org)",
       "WebFetch(domain:lpch.org)",
       "WebFetch(domain:careers.ucsf.edu)",
-      "WebFetch(domain:careers.stanfordchildrens.org)"
+      "WebFetch(domain:careers.stanfordchildrens.org)",
+      "WebFetch(domain:www.johnmuirhealth.com)",
+      "WebFetch(domain:www.dignityhealth.org)",
+      "WebFetch(domain:jobs.commonspirit.org)",
+      "WebFetch(domain:www.elcaminohealth.org)",
+      "WebFetch(domain:scvmc.scvh.org)",
+      "WebFetch(domain:rmc.scvh.org)",
+      "WebFetch(domain:www.alamedahealthsystem.org)",
+      "WebFetch(domain:www.cchealth.org)",
+      "WebFetch(domain:mymarinhealth.wd5.myworkdayjobs.com)",
+      "WebFetch(domain:alameda-health-system-careers.hctsportals.com)",
+      "WebFetch(domain:www.governmentjobs.com)",
+      "WebFetch(domain:www.commonspirit.careers)",
+      "WebFetch(domain:pm.healthcaresource.com)",
+      "WebFetch(domain:careers-commonspirit.icims.com)",
+      "WebFetch(domain:recruiting2.ultipro.com)",
+      "WebFetch(domain:api.neogov.com)",
+      "WebFetch(domain:developer-community.icims.com)",
+      "WebFetch(domain:apidoc.symplr.com)",
+      "WebFetch(domain:www.neogov.com)",
+      "WebFetch(domain:jmh.wd5.myworkdayjobs.com)",
+      "WebFetch(domain:www.washingtonhospital.org)"
     ]
   }
 }

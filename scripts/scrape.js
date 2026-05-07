@@ -3,6 +3,14 @@ import { scrape as scrapeStanfordAdult } from './hospitals/stanford-adult.js';
 import { scrape as scrapeStanfordChildrens } from './hospitals/stanford-childrens.js';
 import { scrape as scrapeUCSF } from './hospitals/ucsf.js';
 import { scrape as scrapeSutter } from './hospitals/sutter.js';
+import { scrape as scrapeJohnMuir } from './hospitals/john-muir.js';
+import { scrape as scrapeMarinHealth } from './hospitals/marin-health.js';
+import { scrape as scrapeProvidence } from './hospitals/providence.js';
+import { scrape as scrapeCommonSpirit } from './hospitals/commonspirit.js';
+import { scrape as scrapeSCVMC } from './hospitals/scvmc.js';
+import { scrape as scrapeContraCosta } from './hospitals/contra-costa.js';
+import { scrape as scrapeElCamino } from './hospitals/el-camino.js';
+import { scrape as scrapeAlamedaHealth } from './hospitals/alameda-health.js';
 import { jobExists, insertJob } from './lib/supabase.js';
 import { notifyDiscord } from './lib/discord.js';
 
@@ -12,6 +20,14 @@ const scrapers = [
   { name: 'Stanford Childrens', fn: scrapeStanfordChildrens },
   { name: 'UCSF', fn: scrapeUCSF },
   { name: 'Sutter', fn: scrapeSutter },
+  { name: 'John Muir', fn: scrapeJohnMuir },
+  { name: 'Marin Health', fn: scrapeMarinHealth },
+  { name: 'Providence', fn: scrapeProvidence },
+  { name: 'CommonSpirit', fn: scrapeCommonSpirit },
+  { name: 'SCVMC', fn: scrapeSCVMC },
+  { name: 'Contra Costa', fn: scrapeContraCosta },
+  { name: 'El Camino', fn: scrapeElCamino },
+  { name: 'Alameda Health', fn: scrapeAlamedaHealth },
 ];
 
 async function run() {
